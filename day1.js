@@ -1,9 +1,12 @@
-import path from "node:path";
-import fs from "node:fs/promises";
+const path = require("node:path");
+const fs = require("node:fs");
 
 let testInputs = ["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", "treb7uchet"];
-let inputFile = await fs.open(path.resolve("day1input.txt"), "r");
-let data = await inputFile.readFile("utf8");
+try {
+    var data = fs.readFileSync(path.resolve("day1input.txt"), "utf8");
+} catch (err) {
+    console.log(err);
+}
 data = data.split("\n").map((s) => s.trimEnd());
 
 // console.log(sumVals(data));
@@ -37,13 +40,10 @@ function sumVals(calibrationValList) {
     }
 }
 
-await inputFile.close();
-
 ///////////// part 2 //////////////
 let part2Inputs = [
     "two1nine",
     "eightwothree",
-    "threeeightwo",
     "abcone2threexyz",
     "xtwone3four",
     "4nineeightseven2",
@@ -51,11 +51,15 @@ let part2Inputs = [
     "7pqrstsixteen",
 ];
 
-inputFile = await fs.open(path.resolve("day1input.txt"), "r");
-data = await inputFile.readFile("utf8");
+try {
+    var data = fs.readFileSync(path.resolve("day1input.txt"), "utf8");
+} catch (err) {
+    console.log(err);
+}
 data = data.split("\n").map((s) => s.trimEnd());
 
-let regex = /[0-9]|one|two|three|four|five|six|seven|eight|nine/g;
+// let regex = /[0-9]|one|two|three|four|five|six|seven|eight|nine/g;
+let regex = /(?=([0-9]|one|two|three|four|five|six|seven|eight|nine))/g;
 
 let digitMap = {
     1: 1,
@@ -82,9 +86,11 @@ let digitMap = {
 // amendedCalibrationVal {string}
 // return {number}
 function getCalibrationVal2(amendedCalibrationVal) {
-    let numericDigits = amendedCalibrationVal.match(regex);
-    let firstDigit = digitMap[numericDigits[0]];
-    let lastDigit = digitMap[numericDigits[numericDigits.length - 1]];
+    // let numericDigits = amendedCalibrationVal.match(regex);
+    let numericDigits = amendedCalibrationVal.matchAll(regex);
+    numericDigits = Array.from(numericDigits);
+    let firstDigit = digitMap[numericDigits[0][1]];
+    let lastDigit = digitMap[numericDigits[numericDigits.length - 1][1]];
     return Number(String(firstDigit) + String(lastDigit));
 }
 
@@ -100,6 +106,10 @@ function sumVals2(calibrationValList) {
 }
 
 console.log("part 2 tests:", sumVals2(part2Inputs));
-// console.log("part 2 file:", sumVals2(data));
+console.log("part 2 file:", sumVals2(data));
 
-await inputFile.close();
+///////// tests ///////////
+
+// part2Inputs.forEach((s, i, arr) => {
+//     console.log(s, "returns", getCalibrationVal2(s));
+// });
